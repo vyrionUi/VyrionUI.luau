@@ -1,5 +1,3 @@
--- Vyrion UI library (extraída de BloxStrike_Vyrion.lua, sin código de aimbot/ESP)
--- Uso: local Library = loadstring(readfile("VyrionUI.lua"))()
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
