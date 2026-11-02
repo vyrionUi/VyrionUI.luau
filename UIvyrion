@@ -1,3 +1,4 @@
+-- print ("Wellcome to vyrion")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
