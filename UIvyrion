@@ -10848,13 +10848,22 @@ function Tab:_mediaCard(opts, defaultHeight)
     local metrics = metricsOf(self)
     local compact = metrics.Compact
     local mediaHeight = math.clamp(tonumber(opts.Height) or defaultHeight, 40, 600)
-    local inset = compact and 14 or 8
-    local hasHead = type(opts.Name) == "string" and opts.Name ~= ""
+    -- Dark = true: the card drops its usual background/border and the media
+    -- fills the whole element edge to edge on a near-black panel, detached
+    -- from the rest of the UI's look. The title (if any) floats as a pill
+    -- over the top-left corner instead of sitting in a header above it.
+    local dark = opts.Dark == true
+    local inset = dark and 0 or (compact and 14 or 8)
+    local hasHead = (not dark) and type(opts.Name) == "string" and opts.Name ~= ""
     local titleTop = compact and 4 or 10
     local mediaTop = hasHead and (titleTop + (opts.Desc and 38 or 22)) or (compact and 4 or inset)
-    local height = mediaTop + mediaHeight + (compact and 6 or inset)
+    local height = mediaTop + mediaHeight + (dark and 0 or (compact and 6 or inset))
     local frame, frameStroke = card(self, "Frame", height, opts)
     hoverStroke(frame, frameStroke)
+    if dark then
+        frame.BackgroundTransparency = 1
+        frameStroke.Transparency = 1
+    end
     local title, descLabel
     if hasHead then
         title = label({
@@ -10879,14 +10888,45 @@ function Tab:_mediaCard(opts, defaultHeight)
     local media = create("Frame", {
         Position = UDim2.fromOffset(inset, mediaTop),
         Size = UDim2.new(1, -inset * 2, 0, mediaHeight),
-        BackgroundColor3 = Theme.Surface3,
-        BackgroundTransparency = 0.5,
+        BackgroundColor3 = dark and Color3.fromRGB(8, 8, 10) or Theme.Surface3,
+        BackgroundTransparency = dark and 0 or 0.5,
         BorderSizePixel = 0,
         ClipsDescendants = true,
         Parent = frame,
     })
-    corner(media, UDim.new(0, 6))
-    stroke(media, Theme.Stroke)
+    corner(media, UDim.new(0, dark and 10 or 6))
+    if dark then
+        stroke(media, Color3.fromRGB(28, 28, 32), 1)
+    else
+        stroke(media, Theme.Stroke)
+    end
+    local nameTag
+    if dark and type(opts.Name) == "string" and opts.Name ~= "" then
+        local tag = create("Frame", {
+            Position = UDim2.fromOffset(10, 10),
+            Size = UDim2.fromOffset(0, 22),
+            AutomaticSize = Enum.AutomaticSize.X,
+            BackgroundColor3 = Color3.new(0, 0, 0),
+            BackgroundTransparency = 0.35,
+            BorderSizePixel = 0,
+            ZIndex = 5,
+            Parent = media,
+        })
+        corner(tag, UDim.new(1, 0))
+        local tagPad = Instance.new("UIPadding")
+        tagPad.PaddingLeft = UDim.new(0, 10)
+        tagPad.PaddingRight = UDim.new(0, 10)
+        tagPad.Parent = tag
+        nameTag = label({
+            Size = UDim2.new(0, 0, 1, 0),
+            AutomaticSize = Enum.AutomaticSize.X,
+            Text = opts.Name,
+            TextSize = 12,
+            TextColor3 = Color3.new(1, 1, 1),
+            ZIndex = 6,
+            Parent = tag,
+        })
+    end
     local placeholder = create("ImageLabel", {
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.fromScale(0.5, 0.5),
@@ -10935,6 +10975,7 @@ function Tab:_mediaCard(opts, defaultHeight)
         Placeholder = placeholder,
         Title = title,
         Desc = descLabel,
+        NameTag = nameTag,
         SetCaption = setCaption,
     }
 end
@@ -11034,6 +11075,9 @@ function Tab:Image(opts)
     function handle:SetTitle(text)
         if parts.Title then
             parts.Title.Text = tostring(text)
+        end
+        if parts.NameTag then
+            parts.NameTag.Text = tostring(text)
         end
     end
 
@@ -11237,6 +11281,9 @@ function Tab:Viewport(opts)
     function handle:SetTitle(text)
         if parts.Title then
             parts.Title.Text = tostring(text)
+        end
+        if parts.NameTag then
+            parts.NameTag.Text = tostring(text)
         end
     end
 
