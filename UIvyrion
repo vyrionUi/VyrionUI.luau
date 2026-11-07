@@ -18634,20 +18634,21 @@ function Window:_buildMiniBar()
     end)
     self._miniWidth = math.clamp(math.ceil(Mini.Height + 2 + nameWidth + 8 + 72), Mini.Width, 300)
 
-    -- The island itself: a black pill hanging from the top of the screen. It
+    -- The island itself: a pill hanging from the top of the screen. It
     -- is a canvas so its rounded shape clips whatever layer is showing.
     local island = create("CanvasGroup", {
         Name = "Island",
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(0.5, 0, 0, Mini.Top),
         Size = UDim2.fromOffset(self._miniWidth, Mini.Height),
-        BackgroundColor3 = Color3.new(0, 0, 0),
+        BackgroundColor3 = Theme.Background,
         BorderSizePixel = 0,
         GroupTransparency = 1,
         Visible = false,
         ZIndex = 30,
         Parent = gui,
     })
+    tween(island, { BackgroundColor3 = Theme.Background }, 0)
     local islandCorner = Library._fixedCorner(island, UDim.new(0, Mini.Height / 2))
     local islandScale = create("UIScale", { Parent = island })
     self._miniScale = islandScale
@@ -18672,15 +18673,15 @@ function Window:_buildMiniBar()
     end
 
     -- Compact: the logo leading, a live meter of running toggles trailing.
-    -- A graphite surface, lit from the top, so the pill isn't a flat black
-    -- slab; it fades with the layer, leaving the open card black.
+    -- A themed surface, lit from the top, so the pill reads against any background.
     local compact = create("CanvasGroup", {
         Name = "Compact",
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(30, 30, 34),
+        BackgroundColor3 = Theme.Surface,
         BorderSizePixel = 0,
         Parent = island,
     })
+    tween(compact, { BackgroundColor3 = Theme.Surface }, 0)
     create("UIGradient", {
         Rotation = 90,
         Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(120, 120, 120)),
@@ -18716,7 +18717,7 @@ function Window:_buildMiniBar()
         Text = self.Title,
         TextSize = 13,
         FontFace = Fonts.Bold,
-        TextColor3 = Color3.fromRGB(244, 244, 246),
+        TextColor3 = Theme.Text,
         Parent = compact,
     })
     local meter = create("Frame", {
@@ -18782,7 +18783,7 @@ function Window:_buildMiniBar()
         Text = "0s",
         TextSize = 12,
         FontFace = Fonts.Bold,
-        TextColor3 = Color3.fromRGB(220, 220, 224),
+        TextColor3 = Theme.Text,
         TextTruncate = Enum.TextTruncate.None,
         LayoutOrder = 0,
         Parent = meter,
@@ -18813,7 +18814,7 @@ function Window:_buildMiniBar()
     })
     local face = create("ImageLabel", {
         Size = UDim2.fromOffset(48, 48),
-        BackgroundColor3 = Color3.fromRGB(38, 38, 41),
+        BackgroundColor3 = Theme.Surface2,
         BorderSizePixel = 0,
         Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(LocalPlayer.UserId) .. "&w=150&h=150",
         Parent = top,
@@ -18836,7 +18837,7 @@ function Window:_buildMiniBar()
         Size = UDim2.new(1, -150, 0, 20),
         TextSize = 15,
         FontFace = Fonts.Bold,
-        TextColor3 = Color3.fromRGB(244, 244, 246),
+        TextColor3 = Theme.Text,
         Parent = top,
     })
     self:_trackName(nameLabel, "Display")
@@ -18859,7 +18860,7 @@ function Window:_buildMiniBar()
         Text = "0s",
         TextSize = 20,
         FontFace = Fonts.Bold,
-        TextColor3 = Color3.fromRGB(244, 244, 246),
+        TextColor3 = Theme.Text,
         TextXAlignment = Enum.TextXAlignment.Right,
         Parent = top,
     })
@@ -18895,7 +18896,7 @@ function Window:_buildMiniBar()
             Text = "",
             TextSize = 20,
             FontFace = Fonts.Bold,
-            TextColor3 = Color3.fromRGB(244, 244, 246),
+            TextColor3 = Theme.Text,
             RichText = true,
             Parent = cell,
         })
@@ -18913,10 +18914,11 @@ function Window:_buildMiniBar()
             AnchorPoint = Vector2.new(0, 1),
             Position = UDim2.new(0, 0, 1, -4),
             Size = UDim2.new(1, 0, 0, 3),
-            BackgroundColor3 = Color3.fromRGB(38, 38, 42),
+            BackgroundColor3 = Theme.Surface2,
             BorderSizePixel = 0,
             Parent = cell,
         })
+        tween(track, { BackgroundColor3 = Theme.Surface2 }, 0)
         corner(track, UDim.new(1, 0))
         local fill = create("Frame", {
             Size = UDim2.fromScale(0, 1),
@@ -18948,11 +18950,12 @@ function Window:_buildMiniBar()
         local chipFrame = create("Frame", {
             Size = UDim2.fromOffset(0, 30),
             AutomaticSize = Enum.AutomaticSize.X,
-            BackgroundColor3 = Color3.fromRGB(32, 32, 35),
+            BackgroundColor3 = Theme.Surface2,
             BorderSizePixel = 0,
             LayoutOrder = order,
             Parent = chips,
         })
+        tween(chipFrame, { BackgroundColor3 = Theme.Surface2 }, 0)
         corner(chipFrame, UDim.new(1, 0))
         padding(chipFrame, 14, 14)
         create("UIListLayout", {
@@ -18979,7 +18982,7 @@ function Window:_buildMiniBar()
             Text = "",
             TextSize = 12,
             FontFace = Fonts.Bold,
-            TextColor3 = color or Color3.fromRGB(244, 244, 246),
+            TextColor3 = color or Theme.Text,
             TextTruncate = Enum.TextTruncate.None,
             LayoutOrder = 2,
             Parent = chipFrame,
@@ -19009,7 +19012,7 @@ function Window:_buildMiniBar()
         Text = "",
         TextSize = 12,
         FontFace = Fonts.Regular,
-        TextColor3 = Color3.fromRGB(200, 200, 206),
+        TextColor3 = Theme.Text,
         RichText = true,
         Visible = false,
         LayoutOrder = 4,
@@ -19526,7 +19529,7 @@ function Window:_buildMiniBar()
         Name = "IslandBubble",
         AnchorPoint = Vector2.new(0.5, 0.5),
         Size = UDim2.fromOffset(0, 0),
-        BackgroundColor3 = Color3.fromRGB(26, 26, 30),
+        BackgroundColor3 = Theme.Surface,
         BorderSizePixel = 0,
         Text = "",
         AutoButtonColor = false,
@@ -19534,6 +19537,7 @@ function Window:_buildMiniBar()
         ZIndex = 30,
         Parent = gui,
     })
+    tween(bubble, { BackgroundColor3 = Theme.Surface }, 0)
     corner(bubble, UDim.new(1, 0))
     local split = create("NumberValue", { Value = 0 })
     local splitOn = false
@@ -19726,6 +19730,18 @@ function Window:_buildMiniBar()
             end)
         end
     end
+
+    -- Repaint the island and its inner elements whenever the theme changes.
+    onTheme(island, function()
+        island.BackgroundColor3 = Theme.Background
+        compact.BackgroundColor3 = Theme.Surface
+        bubble.BackgroundColor3 = Theme.Surface
+        face.BackgroundColor3 = Theme.Surface2
+        miniTitle.TextColor3 = Theme.Text
+        idleLabel.TextColor3 = Theme.Text
+        nameLabel.TextColor3 = Theme.Text
+        sessionLabel.TextColor3 = Theme.Text
+    end)
 
     self.MiniBar = island
     self.Island = island
